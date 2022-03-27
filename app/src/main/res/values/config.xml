@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name= "HomeServer_url">
+        "https://70.75.153.207/LocalServer/PostProcess/PostProcess2.php" </string>
+
+    <string name ="CloudServer1_url" >
+        "https://joanserver1.eastus.cloudapp.azure.com/CloudServer1/PostProcess/PostProcess2.php"</string>
+
+    <string name= "CloudServer2_url">
+        "https://newcloudserver2.eastus.cloudapp.azure.com/CloudServer2/PostProcess/PostProcess2.php" </string>
+
+
+   <string name = "HomeServer_userData">
+       "https://70.75.153.207/LocalServer/Database/userMessages.json" </string>
+
+    <string name = "CloudServer1_userData">
+        "https://joanserver1.eastus.cloudapp.azure.com/CloudServer1/Database/userMessages.json" </string>
+
+    <string name = "CloudServer2_userData">
+        "https://newcloudserver2.eastus.cloudapp.azure.com/CloudServer2/Database/userMessages.json" </string>
+
+    <string name = "serverList"> "HomeServer,CloudServer1,CloudServer2" </string>
+</resources>

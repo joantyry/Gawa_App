@@ -1,0 +1,134 @@
+
+
+
+if (online == BigInteger.valueOf(1) && online == BigInteger.valueOf(2)) {
+
+y_Prime = new BigInteger[]{home, cloud1};
+
+BigInteger home_key = (sum.add(y_Prime[0].modPow(xtil, p))).mod(p);
+BigInteger cloud1_key = (sum.add(y_Prime[1].modPow(xtil, p))).mod(p);
+
+String[] urls = {url2[0], url2[1]};
+serShares = objSRV.getRecon(urls);
+
+for (int i = 0; i < 2; i++) {
+
+JSONObject object = (JSONObject) serShares.get(i);
+String serverName = (String) object.get("src");
+//BigInteger[] ser = (BigInteger[]) object.get("EShare");
+Long ser = (Long) object.get("EShare");
+
+
+serShares1.put(serverName, ser);
+
+}
+
+
+
+//Decrypt Eshares
+
+BigInteger[] homeEnc = {BigInteger.valueOf(1), BigInteger.valueOf((Long) serShares1.get("CloudServer2"))};
+BigInteger homeDec = (home_key.multiply(homeEnc[1])).mod(p);
+
+BigInteger[] cloud1Enc = {BigInteger.valueOf(2), BigInteger.valueOf((Long) serShares1.get("CloudServer1"))};
+BigInteger cloud1Dec = (cloud1_key.multiply(cloud1Enc[1])).mod(p);
+
+//join shares using SecretSharing code format
+share1 = new SecretShare(homeEnc[0].intValue(), homeDec);
+share2  = new SecretShare(cloud1Enc[0].intValue(), cloud1Dec);
+
+} else if (online == BigInteger.valueOf(2) && online == BigInteger.valueOf(3)) {
+
+y_Prime = new BigInteger[]{cloud1, cloud2};
+BigInteger cloud1_key = (sum.add(y_Prime[0].modPow(xtil, p))).mod(p);
+BigInteger cloud2_key = (sum.add(y_Prime[1].modPow(xtil, p))).mod(p);
+
+String[] urls = {url2[1], url2[2]};
+JSONArray serShares = objSRV.getRecon(urls);
+
+for (int i = 0; i < 2; i++) {
+
+JSONObject object = (JSONObject) serShares.get(i);
+String serverName = (String) object.get("src");
+//BigInteger[] ser = (BigInteger[]) object.get("EShare");
+Long ser = (Long) object.get("EShare");
+
+
+serShares1.put(serverName, ser);
+
+}
+
+//Decrypt Eshares
+BigInteger[] cloud1Enc = {BigInteger.valueOf(2), BigInteger.valueOf((Long) serShares1.get("CloudServer1"))};
+BigInteger cloud1Dec = (cloud1_key.multiply(cloud1Enc[1])).mod(p);
+
+BigInteger[] cloud2Enc = {BigInteger.valueOf(3), BigInteger.valueOf((Long) serShares1.get("CloudServer2"))};
+BigInteger cloud2Dec = (cloud2_key.multiply(cloud2Enc[1])).mod(p);
+
+//join shares using SecretSharing code format
+share1 = new SecretShare(cloud1Enc[0].intValue(), cloud1Dec);
+share2  = new SecretShare(cloud2Enc[0].intValue(), cloud2Dec);
+
+
+} else {
+
+y_Prime = new BigInteger[]{home, cloud2};
+BigInteger home_key = (sum.add(y_Prime[0].modPow(xtil, p))).mod(p);
+BigInteger cloud2_key = (sum.add(y_Prime[1].modPow(xtil, p))).mod(p);
+
+String[] urls = {url2[0], url2[2]};
+JSONArray serShares = objSRV.getRecon(urls);
+
+for (int i = 0; i < 2; i++) {
+
+JSONObject object = (JSONObject) serShares.get(i);
+String serverName = (String) object.get("src");
+//BigInteger[] ser = (BigInteger[]) object.get("EShare");
+Long ser = (Long) object.get("EShare");
+
+
+serShares1.put(serverName, ser);
+
+}
+
+//Decrypt Eshares
+BigInteger[] homeEnc = {BigInteger.valueOf(1), BigInteger.valueOf((Long) serShares1.get("HomeServer"))};
+BigInteger homeDec = (home_key.multiply(homeEnc[1])).mod(p);
+
+
+BigInteger[] cloud2Enc = {BigInteger.valueOf(3), BigInteger.valueOf((Long) serShares1.get("CloudServer2"))};
+BigInteger cloud2Dec = (cloud2_key.multiply(cloud2Enc[1])).mod(p);
+
+//join shares using SecretSharing code format
+share1 = new SecretShare(homeEnc[0].intValue(), homeDec);
+share2  = new SecretShare(cloud2Enc[0].intValue(), cloud2Dec);
+
+
+
+}
+}
+
+
+//Reconstruct S2
+
+SecretShare[] shares12 = new SecretShare[]{share1, share2};
+
+BigInteger S2 = Shamir.combine(shares12, p);
+
+
+//Read S1 from secret_file
+JSONParser parser2 = new JSONParser();
+File path2 = secret_file.getAbsoluteFile();
+JSONArray objS1 = (JSONArray) parser2.parse(new FileReader(path2));
+
+JSONObject objectS1 = (JSONObject) objS1.get(0);
+BigInteger S1 = BigInteger.valueOf((Long) objectS1.get("S1"));
+
+
+//Reconstruct the secret using S1 and S2
+SecretShare S1_s = new SecretShare(1, S1);
+SecretShare S2_s = new SecretShare(2, S2);
+
+SecretShare[] FinalShares = new SecretShare[]{S1_s, S2_s};
+
+BigInteger Secret = Shamir.combine(FinalShares, p);
